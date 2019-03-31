@@ -11,6 +11,19 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', function () {
-    return view('welcome');
+    return view('master');
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::namespace('Short')
+    ->as('short.')
+    ->group(function () {
+        Route::get('/{short}', 'ShortController@show')->name('show');
+        Route::post('/', 'ShortController@store')->name('store');
+    });
