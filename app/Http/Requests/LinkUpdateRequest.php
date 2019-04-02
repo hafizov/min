@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LinkStoreRequest extends FormRequest
+class LinkUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,7 @@ class LinkStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'original' => [
-                'required',
-                'regex:/^(http|https):\/\/(.*)/'
-            ]
+            'short' => 'required'
         ];
     }
 }

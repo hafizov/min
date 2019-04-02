@@ -1,14 +1,18 @@
 <template>
-    <div class="row">
+    <div>
+        <form role="form" v-on:submit.prevent="onSubmit">
 
-        <div class="col-md-10">
-
-            <div class="form-group">
+            <div class="input-group">
                 <input type="text"
                        class="form-control"
-                       placeholder="Input your link"
+                       placeholder="Input your link e.g (http://example.com/ or https://example.com/)"
                        v-model="link"
-                       pattern="^(http|https)://">
+                       required
+                       pattern="^(http|https):\/\/(.*)">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit" v-if="!loading">Уменьшить</button>
+                    <button class="btn btn-primary" disabled v-else>Подождите...</button>
+                </div>
             </div>
 
             <div class="form-group">
@@ -27,17 +31,7 @@
                 </div>
             </div>
 
-        </div>
-
-        <div class="col-md-2">
-            <div class="form-group">
-                <button class="btn btn-primary" @click="submit" v-if="!loading">Уменьшить</button>
-                <button class="btn btn-primary" disabled v-else>
-                    Подождите...
-                </button>
-            </div>
-        </div>
-
+        </form>
     </div>
 </template>
 
@@ -48,10 +42,13 @@
                 link: null,
                 time: null,
                 loading: false,
+
+                isValid: false,
+                validRegex: '^(http|https)://'
             }
         },
         methods: {
-            submit() {
+            onSubmit() {
                 let self = this;
                 let url = route('short.store');
                 self.loading = true;
@@ -61,8 +58,13 @@
                     expiration: self.time
                 })
                     .then(function (response) {
+                        let short = response.data.locUrl + "/" + response.data.link.short;
+                        Event.fire('short-link-successful-generate', {
+                            link: response.data.link,
+                            locUrl: response.data.locUrl
+                        });
                         self.loading = false;
-                        self.link = response.data.locUrl + "/" + response.data.link.short;
+                        self.link = short;
                     })
                     .catch(function (error) {
                         self.loading = false;
@@ -70,5 +72,10 @@
                     })
             }
         },
+        mounted() {
+            Event.listen('short-link-successful-update', (data) => {
+                this.link = data;
+            });
+        }
     }
 </script>

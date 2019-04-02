@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Short;
 
 use App\Http\Requests\LinkStoreRequest;
+use App\Http\Requests\LinkUpdateRequest;
+use App\Jobs\DeleteExprirationLink;
 use App\Link;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -30,7 +32,6 @@ class ShortController extends Controller
      */
     public function store(LinkStoreRequest $request)
     {
-        sleep(3);
         $userId = Auth::id();
         $originalLink = $request->input('original');
         $expirationTime = $request->input('expiration');
@@ -45,6 +46,29 @@ class ShortController extends Controller
             'expiration'    => $expirationTime,
         ]);
         $link->save();
+
+        if ($expirationTime) {
+            DeleteExprirationLink::dispatch($link)
+                ->delay($expirationTime);
+        }
+
+        $locUrl = env('APP_URL');
+
+        return compact('link', 'locUrl');
+    }
+
+    public function update(LinkUpdateRequest $request)
+    {
+        $lastShort = $request->input('lastShort');
+        $short = $request->input('short');
+
+        $link = Link::where('short', $lastShort)
+            ->where('is_active', 1)
+            ->firstOrFail();
+
+        $link->update([
+            'short' => $short
+        ]);
 
         $locUrl = env('APP_URL');
 

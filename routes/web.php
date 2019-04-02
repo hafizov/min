@@ -26,4 +26,5 @@ Route::namespace('Short')
     ->group(function () {
         Route::get('/{short}', 'ShortController@show')->name('show');
         Route::post('/', 'ShortController@store')->name('store');
+        Route::put('/', 'ShortController@update')->name('update');
     });
