@@ -21,9 +21,3 @@ Set up our DB in `.env` file and run below command:
     php artisan migrate
 
 Then install the supervisor follow in this link how to install it [Laravel Queues](https://laravel.com/docs/5.8/queues#supervisor-configuration):
-
-## Features
-
-- Google API binding for analyze.
-- Users profiles
-- Analyze in profiles user
